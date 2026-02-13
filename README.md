@@ -1,48 +1,91 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Will you be my Valentine Arwa ji 🌹💗</title>
 
 <style>
+:root{
+  --brightRed:#d10000;
+  --rose1:#ff4d8d;
+  --rose2:#ff85a1;
+  --card:rgba(255,255,255,.92);
+}
+
+*{box-sizing:border-box;}
+
 body{
   margin:0;
-  min-height:100vh;
+  height:100vh;
   display:flex;
-  justify-content:center;
   align-items:center;
-  font-family:system-ui, -apple-system, Segoe UI, Roboto;
-  background:linear-gradient(135deg,#ffe6f0,#e6f7ff);
+  justify-content:center;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:url("https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1920&q=80") center/cover no-repeat;
   overflow:hidden;
+}
+
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(150,0,0,0.25);
+  backdrop-filter:blur(2px);
+}
+
+/* 🌹 Falling petals */
+.petals{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+}
+.petal{
+  position:absolute;
+  top:-10vh;
+  font-size:22px;
+  opacity:0;
+  animation: fall var(--dur) linear infinite;
+}
+@keyframes fall{
+  0%{transform:translateX(var(--x)) translateY(-12vh);opacity:0;}
+  10%{opacity:.9;}
+  100%{transform:translateX(calc(var(--x)+var(--drift))) translateY(112vh);opacity:0;}
 }
 
 .card{
-  background:white;
-  padding:30px;
-  border-radius:25px;
-  box-shadow:0 20px 45px rgba(0,0,0,.15);
+  width:min(780px,92vw);
+  background:var(--card);
+  border-radius:20px;
+  padding:34px 34px 30px;
   text-align:center;
-  width:min(900px,92vw);
   position:relative;
+  z-index:2;
 }
 
 .title{
-  color:#d40000;
-  font-size:clamp(28px,4.5vw,46px);
+  color:var(--brightRed);
   font-weight:900;
-  text-shadow:0 5px 15px rgba(212,0,0,0.3);
+  font-size:clamp(22px,3.8vw,40px);
+  line-height:1.15;
+  margin:0;
   white-space:nowrap;
 }
 
-.gif{
-  width:min(380px,85vw);
-  margin:20px auto;
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 18px 40px rgba(255,77,141,.3);
+.caption{
+  font-weight:700;
+  font-size:16px;
+  min-height:22px;
+  margin:12px 0 22px;
 }
-.gif img{
+
+.frame{
+  width:min(420px,90%);
+  margin:0 auto 22px;
+  border-radius:18px;
+  overflow:hidden;
+}
+.frame img{
   width:100%;
   display:block;
 }
@@ -50,131 +93,150 @@ body{
 .controls{
   display:flex;
   justify-content:center;
-  gap:15px;
-  flex-wrap:wrap;
-  min-height:70px;
+  gap:18px;
+  margin-bottom:10px;
 }
 
 button{
   border:0;
-  padding:14px 24px;
+  padding:12px 28px;
   border-radius:999px;
-  font-weight:bold;
+  font-weight:700;
+  font-size:15px;
   cursor:pointer;
-  font-size:16px;
   transition:.2s ease;
 }
 
 .yes{
-  background:linear-gradient(135deg,#ff4d8d,#ff85a1);
-  color:white;
+  color:#fff;
+  background:linear-gradient(135deg,var(--rose1),var(--rose2));
 }
 
 .no{
-  background:white;
-  border:2px solid #ddd;
-  position:relative;
+  background:#fff;
+  border:1px solid #ccc;
 }
 
-.result{
-  display:none;
-  margin-top:20px;
+/* ❤️ Signature */
+.signature{
+  position:absolute;
+  right:18px;
+  bottom:14px;
+  font-size:15px;
+  font-weight:900;
+  color:var(--brightRed);
 }
 
-.result img{
-  width:min(380px,85vw);
-  border-radius:20px;
-  margin-top:15px;
+.heart{
+  position:fixed;
+  pointer-events:none;
+  animation:floatUp 2.4s ease forwards;
+  z-index:3;
+}
+@keyframes floatUp{
+  0%{transform:translate(var(--x),110vh);opacity:0;}
+  10%{opacity:1;}
+  100%{transform:translate(calc(var(--x)+40px),-20vh);opacity:0;}
 }
 </style>
 </head>
 
 <body>
+<div class="overlay"></div>
+<div class="petals" id="petals"></div>
 
 <div class="card" id="card">
-
   <h1 class="title">Will you be my Valentine Arwa ji 🌹💗</h1>
 
-  <div class="gif">
+  <p class="caption" id="caption"></p>
+
+  <div class="frame">
     <img id="mainGif"
-    src="https://media.giphy.com/media/3ohhwk0Y4kHh3LJjzq/giphy.gif"
-    alt="Jake proposing">
+      src="https://media.tenor.com/4bV9ylEOWpgAAAAj/bubu-dudu-sseeyall.gif">
   </div>
 
-  <div class="controls" id="controls">
-    <button class="yes" id="yesBtn">YES 💖</button>
+  <div class="controls">
+    <button class="yes" id="yesBtn">Yes 💖</button>
     <button class="no" id="noBtn">No 🙃</button>
   </div>
 
-  <div class="result" id="result">
-    <h2 style="color:#d40000;">NOINE NOINE!!! 🥹💞</h2>
-    <p>Arwa ji said YES. Legendary love story unlocked 💍💗</p>
-    <img src="https://media.giphy.com/media/26Fxy3Iz1ari8oytO/giphy.gif">
-  </div>
-
+  <div class="signature">- Taher ❤️</div>
 </div>
 
 <script>
-let noBtn = document.getElementById("noBtn");
-let yesBtn = document.getElementById("yesBtn");
-let controls = document.getElementById("controls");
-let mainGif = document.getElementById("mainGif");
-let card = document.getElementById("card");
+const card=document.getElementById("card");
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const mainGif=document.getElementById("mainGif");
+const caption=document.getElementById("caption");
+const petalsLayer=document.getElementById("petals");
 
-let attempts = 0;
-let teleportMode = false;
+let noActivated=false;
 
-function sayYes(){
-  document.getElementById("result").style.display="block";
-  controls.style.display="none";
-  mainGif.src = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif";
+function showCaption(text){
+  caption.innerHTML="<strong>"+text+"</strong>";
 }
 
-yesBtn.addEventListener("click", sayYes);
-
-function teleportButton(){
-  if(!teleportMode) return;
-
-  const cardRect = card.getBoundingClientRect();
-  const btnRect = noBtn.getBoundingClientRect();
-
-  const maxX = cardRect.width - btnRect.width;
-  const maxY = cardRect.height - btnRect.height;
-
-  const randomX = Math.random() * maxX;
-  const randomY = Math.random() * maxY;
-
-  noBtn.style.position = "absolute";
-  noBtn.style.left = randomX + "px";
-  noBtn.style.top = randomY + "px";
-}
-
-noBtn.addEventListener("click", function(){
-
-  attempts++;
-
-  // First click → show worstdate gif + activate teleport
-  if(attempts === 1){
-    mainGif.src = "worstdate.gif";
-    teleportMode = true;
+function heartsBurst(count=25){
+  const hearts=["💗","💖","💞","💕","❤️"];
+  for(let i=0;i<count;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.textContent=hearts[Math.floor(Math.random()*hearts.length)];
+    h.style.setProperty("--x",(Math.random()*100)+"vw");
+    h.style.fontSize=(16+Math.random()*18)+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),2400);
   }
+}
 
-  // Add extra YES buttons
-  let newYes = document.createElement("button");
-  newYes.className="yes";
-  newYes.innerText="YES PLEASE 💘";
-  newYes.onclick=sayYes;
-  controls.appendChild(newYes);
+function makePetals(count=16){
+  const symbols=["🌹","🌸"];
+  for(let i=0;i<count;i++){
+    const p=document.createElement("div");
+    p.className="petal";
+    p.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+    p.style.setProperty("--x",(Math.random()*100)+"vw");
+    p.style.setProperty("--drift",(Math.random()*60-30)+"px");
+    p.style.setProperty("--dur",(14+Math.random()*6)+"s");
+    p.style.fontSize=(16+Math.random()*14)+"px";
+    p.style.animationDelay=(-Math.random()*10)+"s";
+    petalsLayer.appendChild(p);
+  }
+}
+makePetals();
 
-  // Make YES grow
-  yesBtn.style.transform = "scale(" + (1 + attempts*0.15) + ")";
-
-  teleportButton();
+yesBtn.addEventListener("click",()=>{
+  mainGif.src="https://media.tenor.com/5XOehZUJ1MAAAAAj/cute-cat-couple.gif";
+  showCaption("Thank you, wifey — you are the cutest 🥺💖✨");
+  heartsBurst();
+  yesBtn.style.display="none";
+  noBtn.style.display="none";
 });
 
-// Teleport when hovered after first click
-noBtn.addEventListener("mouseenter", teleportButton);
+function runNoWithinRange(){
+  const rect=card.getBoundingClientRect();
+  const minX=Math.max(20,rect.left-80);
+  const minY=Math.max(20,rect.top-80);
+  const maxX=Math.min(window.innerWidth-120,rect.right+80);
+  const maxY=Math.min(window.innerHeight-60,rect.bottom+80);
 
+  noBtn.style.position="fixed";
+  noBtn.style.left=(minX+Math.random()*(maxX-minX))+"px";
+  noBtn.style.top=(minY+Math.random()*(maxY-minY))+"px";
+}
+
+noBtn.addEventListener("click",()=>{
+  if(noActivated) return;
+  noActivated=true;
+  mainGif.src="https://media1.tenor.com/m/lJMs4YFWUgAAAAAd/big-bang-theory-sheldon-cooper.gif";
+  showCaption("I am sad, try again 😒");
+  noBtn.style.cursor="not-allowed";
+});
+
+noBtn.addEventListener("mouseenter",()=>{
+  if(noActivated) runNoWithinRange();
+});
 </script>
 
 </body>
